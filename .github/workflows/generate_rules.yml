@@ -1,7 +1,8 @@
 name: Generate Shadowrocket Rules
 
 on:
-  workflow_dispatch:
+  schedule:
+    - cron: '0 1 * * *' # 每天凌晨 1 點 UTC (台北時間上午 9 點)
 
 jobs:
   generate:
@@ -25,7 +26,7 @@ jobs:
       - name: Commit and push changes
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.MY_GITHUB_TOKEN }} # 使用你的 secret 名称
+          github-token: ${{ secrets.MY_GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
             const content = fs.readFileSync('./sbrule.conf', 'utf8');
@@ -35,5 +36,5 @@ jobs:
               path: 'sbrule.conf',
               message: 'Update Shadowrocket rules',
               content: Buffer.from(content).toString('base64'),
-              sha: context.sha // 确保使用当前 commit 的 SHA
+              sha: context.sha
             });
