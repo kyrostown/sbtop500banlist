@@ -37,11 +37,11 @@ def extract_rules(url):
 def write_to_json(rules, filename):
     rule_set = {'version': 1, 'rules': rules}
     with open(filename, 'w', encoding='utf-8') as f:
-        json.dump(rule_set, f, indent=2, separators=(',', ': '))  # 移除多餘逗號
+        json.dump(rule_set, f, indent=2, separators=(',', ': '))
 
 if __name__ == '__main__':
     url = 'https://johnshall.github.io/Shadowrocket-ADBlock-Rules-Forever/sr_top500_banlist.conf'
     rules = extract_rules(url)
-    write_to_json(rules, 'sbrule.conf')
+    write_to_json(rules, 'sbautorule.json')  # 檔案名更改為 sbautorule.json
 
-    print(f'规则已提取并保存到 sbrule.conf 文件中。')
+    print(f'規則已提取並儲存到 sbautorule.json 檔案中。')
