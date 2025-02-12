@@ -1,7 +1,9 @@
 name: Generate Shadowrocket Rules
 
 on:
-  workflow_dispatch: # 手動觸發工作流程 (移除 schedule)
+  schedule:
+    - cron: '0 1 * * *' # 每天凌晨 1 點 UTC (台北時間上午 9 點)
+  workflow_dispatch: # 手動觸發工作流程
 
 jobs:
   generate:
@@ -28,11 +30,11 @@ jobs:
         id: get_sha
         shell: bash
         run: |
-          if [[ -f sbrule.conf ]]; then
-            sha=$(git ls-tree -z HEAD sbrule.conf | cut -d ' ' -f 3)
+          if [[ -f rule.json ]]; then # 檔案名更改為 rule.json
+            sha=$(git ls-tree -z HEAD rule.json | cut -d ' ' -f 3) # 檔案名更改為 rule.json
             echo "sha=$sha" >> $GITHUB_OUTPUT
           else
-            echo "sha=" >> $GITHUB_OUTPUT # 如果檔案不存在，sha 設定為空字串
+            echo "sha=" >> $GITHUB_OUTPUT
           fi
 
       - name: Commit and push changes
@@ -41,12 +43,12 @@ jobs:
           github-token: ${{ secrets.MY_GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            const content = fs.readFileSync('./sbrule.conf', 'utf8');
+            const content = fs.readFileSync('./rule.json', 'utf8'); # 檔案名更改為 rule.json
             const sha = '${{ steps.get_sha.outputs.sha }}';
             await github.rest.repos.createOrUpdateFileContents({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              path: 'sbrule.conf',
+              path: 'rule.json', # 檔案名更改為 rule.json
               message: 'Update Shadowrocket rules',
               content: Buffer.from(content).toString('base64'),
               sha: sha === '' ? undefined : sha // 處理檔案建立的情況
@@ -56,7 +58,7 @@ jobs:
       - name: Clear cache (optional)
         uses: actions/cache@v3
         with:
-          path: ~/.cache/pip # 清除 pip 快取
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }} # 使用 requirements.txt 檔案雜湊作為快取鍵
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
