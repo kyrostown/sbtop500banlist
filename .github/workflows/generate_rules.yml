@@ -9,7 +9,7 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Grant write permission to the repo
+      contents: write  # 授予寫入倉庫內容的權限，這是必要的
 
     steps:
       - name: Checkout code
@@ -34,7 +34,7 @@ jobs:
             sha=$(git ls-tree -z HEAD sbrule.conf | cut -d ' ' -f 3)
             echo "sha=$sha" >> $GITHUB_OUTPUT
           else
-            echo "sha=" >> $GITHUB_OUTPUT # Set sha to empty if file doesn't exist
+            echo "sha=" >> $GITHUB_OUTPUT # 如果檔案不存在，sha 設定為空字串
           fi
 
       - name: Commit and push changes
@@ -51,5 +51,5 @@ jobs:
               path: 'sbrule.conf',
               message: 'Update Shadowrocket rules',
               content: Buffer.from(content).toString('base64'),
-              sha: sha === '' ? undefined : sha // Handle file creation
+              sha: sha === '' ? undefined : sha // 處理檔案建立的情況
             });
