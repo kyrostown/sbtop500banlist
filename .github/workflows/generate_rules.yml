@@ -3,6 +3,7 @@ name: Generate Shadowrocket Rules
 on:
   schedule:
     - cron: '0 1 * * *' # 每天凌晨 1 點 UTC (台北時間上午 9 點)
+  workflow_dispatch: # 手動觸發工作流程
 
 jobs:
   generate:
