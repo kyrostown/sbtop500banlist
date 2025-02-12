@@ -24,6 +24,12 @@ jobs:
       - name: Run script
         run: python convert_rules.py
 
+      - name: Get latest SHA
+        id: get_sha
+        run: |
+          sha=$(git ls-tree -z HEAD sbrule.conf | cut -d ' ' -f 3)
+          echo "::set-output name=sha::$sha"
+
       - name: Commit and push changes
         uses: actions/github-script@v6
         with:
@@ -31,11 +37,12 @@ jobs:
           script: |
             const fs = require('fs');
             const content = fs.readFileSync('./sbrule.conf', 'utf8');
+            const sha = '${{ steps.get_sha.outputs.sha }}'; // 使用最新的 SHA
             await github.rest.repos.createOrUpdateFileContents({
               owner: context.repo.owner,
               repo: context.repo.repo,
               path: 'sbrule.conf',
               message: 'Update Shadowrocket rules',
               content: Buffer.from(content).toString('base64'),
-              sha: context.sha
+              sha: sha  // 使用最新的 SHA
             });
