@@ -1,8 +1,7 @@
 name: Generate Sing-box Rules
 
 on:
-  schedule:
-    - cron: '45 13 * * *'  # 每天 00:00 UTC 运行
+  workflow_dispatch:  # 手動觸發工作流程
 
 jobs:
   generate:
@@ -23,8 +22,11 @@ jobs:
       - name: Run script
         run: python extract_and_convert.py
 
+      - name: Rename output file
+        run: mv singbox_rules.yaml sbrule.conf  # 將 singbox_rules.yaml 重命名為 sbrule.conf
+
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: 'Update sing-box rules'
-          file_pattern: singbox_rules.yaml
+          commit_message: 'Update Shadowrocket rules'
+          file_pattern: sbrule.conf
