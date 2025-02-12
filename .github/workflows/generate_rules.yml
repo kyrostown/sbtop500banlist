@@ -1,15 +1,13 @@
 name: Generate Shadowrocket Rules
 
 on:
-  schedule:
-    - cron: '0 1 * * *' # 每天凌晨 1 點 UTC (台北時間上午 9 點)
-  workflow_dispatch: # 手動觸發工作流程
+  workflow_dispatch: # 手動觸發工作流程 (移除 schedule)
 
 jobs:
   generate:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # 授予寫入倉庫內容的權限，這是必要的
+      contents: write
 
     steps:
       - name: Checkout code
@@ -53,3 +51,12 @@ jobs:
               content: Buffer.from(content).toString('base64'),
               sha: sha === '' ? undefined : sha // 處理檔案建立的情況
             });
+
+      # 清除相關快取 (可選，如果問題仍然存在)
+      - name: Clear cache (optional)
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip # 清除 pip 快取
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }} # 使用 requirements.txt 檔案雜湊作為快取鍵
+          restore-keys: |
+            ${{ runner.os }}-pip-
