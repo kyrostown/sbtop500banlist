@@ -1,7 +1,7 @@
 name: Generate Shadowrocket Rules
 
 on:
-  workflow_dispatch:  # 手动触发工作流程
+  workflow_dispatch:
 
 jobs:
   generate:
@@ -22,11 +22,11 @@ jobs:
       - name: Run script
         run: python convert_rules.py
 
-      - name: Commit and push changes
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
+- name: Commit and push changes
+  uses: actions/github-script@v6
+  with:
+    github-token: ${{ secrets.MY_GITHUB_TOKEN }} # 使用你新命名的 secret
+    script: |
             const fs = require('fs');
             const content = fs.readFileSync('./sbrule.conf', 'utf8');
             await github.rest.repos.createOrUpdateFileContents({
@@ -35,5 +35,5 @@ jobs:
               path: 'sbrule.conf',
               message: 'Update Shadowrocket rules',
               content: Buffer.from(content).toString('base64'),
-              sha: context.sha
+              sha: context.sha // 确保使用当前 commit 的 SHA
             });
