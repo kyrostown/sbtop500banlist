@@ -12,15 +12,15 @@ def extract_rules(url):
     for line in content.splitlines():
         if line.startswith('DOMAIN-KEYWORD'):
             keyword = line.split(',')[1].strip()
-            rules.append({'type': 'domain_keyword', 'value': keyword, 'action': 'block'})
+            rules.append({'type': 'domain_keyword', 'value': keyword, 'action': 'proxy'}) # action 改为 proxy
         elif line.startswith('DOMAIN-SUFFIX'):
             match = re.search(r'DOMAIN-SUFFIX,([^,]+),', line)
             if match:
                 domain = match.group(1).strip()
-                rules.append({'type': 'domain_suffix', 'value': domain, 'action': 'block'})
+                rules.append({'type': 'domain_suffix', 'value': domain, 'action': 'proxy'}) # action 改为 proxy
         elif line.startswith('IP-CIDR'):
             ip = line.split(',')[1].strip()
-            rules.append({'type': 'ip_cidr', 'value': ip, 'action': 'block'})
+            rules.append({'type': 'ip_cidr', 'value': ip, 'action': 'proxy'}) # action 改为 proxy
 
     return rules
 
