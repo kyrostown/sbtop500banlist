@@ -8,6 +8,8 @@ on:
 jobs:
   generate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Grant write permission to the repo
 
     steps:
       - name: Checkout code
@@ -24,11 +26,16 @@ jobs:
       - name: Run script
         run: python convert_rules.py
 
-      - name: Get latest SHA
+      - name: Get file SHA or create if it doesn't exist
         id: get_sha
+        shell: bash
         run: |
-          sha=$(git ls-tree -z HEAD sbrule.conf | cut -d ' ' -f 3)
-          echo "::set-output name=sha::$sha"
+          if [[ -f sbrule.conf ]]; then
+            sha=$(git ls-tree -z HEAD sbrule.conf | cut -d ' ' -f 3)
+            echo "sha=$sha" >> $GITHUB_OUTPUT
+          else
+            echo "sha=" >> $GITHUB_OUTPUT # Set sha to empty if file doesn't exist
+          fi
 
       - name: Commit and push changes
         uses: actions/github-script@v6
@@ -37,12 +44,12 @@ jobs:
           script: |
             const fs = require('fs');
             const content = fs.readFileSync('./sbrule.conf', 'utf8');
-            const sha = '${{ steps.get_sha.outputs.sha }}'; // 使用最新的 SHA
+            const sha = '${{ steps.get_sha.outputs.sha }}';
             await github.rest.repos.createOrUpdateFileContents({
               owner: context.repo.owner,
               repo: context.repo.repo,
               path: 'sbrule.conf',
               message: 'Update Shadowrocket rules',
               content: Buffer.from(content).toString('base64'),
-              sha: sha  // 使用最新的 SHA
+              sha: sha === '' ? undefined : sha // Handle file creation
             });
