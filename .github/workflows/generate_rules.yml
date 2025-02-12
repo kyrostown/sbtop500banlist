@@ -30,8 +30,8 @@ jobs:
         id: get_sha
         shell: bash
         run: |
-          if [[ -f rule.json ]]; then # 檔案名更改為 rule.json
-            sha=$(git ls-tree -z HEAD rule.json | cut -d ' ' -f 3) # 檔案名更改為 rule.json
+          if [[ -f sbautorule.json ]]; then # 檔案名更改為 sbautorule.json
+            sha=$(git ls-tree -z HEAD sbautorule.json | cut -d ' ' -f 3) # 檔案名更改為 sbautorule.json
             echo "sha=$sha" >> $GITHUB_OUTPUT
           else
             echo "sha=" >> $GITHUB_OUTPUT
@@ -43,12 +43,12 @@ jobs:
           github-token: ${{ secrets.MY_GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            const content = fs.readFileSync('./rule.json', 'utf8'); # 檔案名更改為 rule.json
+            const content = fs.readFileSync('./sbautorule.json', 'utf8'); # 檔案名更改為 sbautorule.json
             const sha = '${{ steps.get_sha.outputs.sha }}';
             await github.rest.repos.createOrUpdateFileContents({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              path: 'rule.json', # 檔案名更改為 rule.json
+              path: 'sbautorule.json', # 檔案名更改為 sbautorule.json
               message: 'Update Shadowrocket rules',
               content: Buffer.from(content).toString('base64'),
               sha: sha === '' ? undefined : sha // 處理檔案建立的情況
