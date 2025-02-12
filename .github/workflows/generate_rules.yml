@@ -1,0 +1,30 @@
+name: Generate Sing-box Rules
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每天 00:00 UTC 运行
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: pip install requests pyyaml
+
+      - name: Run script
+        run: python extract_and_convert.py
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'Update sing-box rules'
+          file_pattern: singbox_rules.yaml
