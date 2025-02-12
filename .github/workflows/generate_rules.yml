@@ -1,0 +1,39 @@
+name: Generate Shadowrocket Rules
+
+on:
+  workflow_dispatch:  # 手动触发工作流程
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: pip install requests pyyaml
+
+      - name: Run script
+        run: python convert_rules.py
+
+      - name: Commit and push changes
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const content = fs.readFileSync('./sbrule.conf', 'utf8');
+            await github.rest.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path: 'sbrule.conf',
+              message: 'Update Shadowrocket rules',
+              content: Buffer.from(content).toString('base64'),
+              sha: context.sha
+            });
