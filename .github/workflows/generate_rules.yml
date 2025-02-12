@@ -22,11 +22,11 @@ jobs:
       - name: Run script
         run: python convert_rules.py
 
-- name: Commit and push changes
-  uses: actions/github-script@v6
-  with:
-    github-token: ${{ secrets.MY_GITHUB_TOKEN }} # 使用你新命名的 secret
-    script: |
+      - name: Commit and push changes
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.MY_GITHUB_TOKEN }} # 使用你的 secret 名称
+          script: |
             const fs = require('fs');
             const content = fs.readFileSync('./sbrule.conf', 'utf8');
             await github.rest.repos.createOrUpdateFileContents({
