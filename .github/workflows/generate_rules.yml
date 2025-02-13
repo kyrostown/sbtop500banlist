@@ -2,8 +2,8 @@ name: Generate Shadowrocket Rules
 
 on:
   schedule:
-    - cron: '0 1 * * *' # 每天凌晨 1 點 UTC (台北時間上午 9 點)
-  workflow_dispatch: # 手動觸發工作流程
+    - cron: '0 1 * * *' # 每天凌晨 1 点 UTC (台北时间上午 9 点)
+  workflow_dispatch: # 手动触发工作流程
 
 jobs:
   generate:
@@ -26,6 +26,15 @@ jobs:
       - name: Run script
         run: python convert_rules.py
 
+      - name: Remove sbautorule.json if it exists # 新增步骤：删除文件
+        run: |
+          if [[ -f sbautorule.json ]]; then
+            rm sbautorule.json
+            git rm sbautorule.json # 从 Git 仓库中移除文件
+            git commit -m "Remove sbautorule.json"
+            git push
+          fi
+
       - name: Commit and push changes
         uses: actions/github-script@v6
         with:
@@ -33,24 +42,18 @@ jobs:
           script: |
             const fs = require('fs');
             const content = fs.readFileSync('./sbautorule.json', 'utf8');
-            try {
-              await github.rest.repos.createOrUpdateFileContents({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                path: 'sbautorule.json',
-                message: 'Update Shadowrocket rules',
-                content: Buffer.from(content).toString('base64'),
-                sha: undefined, // 不傳遞 SHA，讓 GitHub 自動判斷
-                committer: { // 显式指定提交者信息
-                  name: 'GitHub Actions Bot',
-                  email: 'actions@github.com'
-                }
-              });
-            } catch (error) {
-              console.error('Error updating file:', error);
-              // Handle error as needed, e.g., throw error to fail the workflow
-              throw error;
-            }
+            await github.rest.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path: 'sbautorule.json',
+              message: 'Update Shadowrocket rules',
+              content: Buffer.from(content).toString('base64'),
+              sha: undefined, // 不传递 SHA，让 GitHub 自动判断
+              committer: { // 显式指定提交者信息
+                name: 'GitHub Actions Bot',
+                email: 'actions@github.com'
+              }
+            });
 
       - name: Clear cache (optional)
         uses: actions/cache@v3
