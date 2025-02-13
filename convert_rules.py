@@ -42,6 +42,6 @@ def write_to_json(rules, filename):
 if __name__ == '__main__':
     url = 'https://johnshall.github.io/Shadowrocket-ADBlock-Rules-Forever/sr_top500_banlist.conf'
     rules = extract_rules(url)
-    write_to_json(rules, 'sbautorule.json')  # 檔案名更改為 sbautorule.json
+    write_to_json(rules, 'sbautorule.json')  # 文件名更改为 sbautorule.json
 
-    print(f'規則已提取並儲存到 sbautorule.json 檔案中。')
+    print(f'规则已提取并保存到 sbautorule.json 文件中。')
