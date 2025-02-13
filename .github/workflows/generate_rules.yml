@@ -26,17 +26,6 @@ jobs:
       - name: Run script
         run: python convert_rules.py
 
-      - name: Get file SHA or create if it doesn't exist
-        id: get_sha
-        shell: bash
-        run: |
-          if [[ -f sbautorule.json ]]; then
-            sha=$(git ls-tree -z HEAD sbautorule.json | cut -d ' ' -f 3)
-            echo "sha=$sha" >> $GITHUB_OUTPUT
-          else
-            echo "sha=" >> $GITHUB_OUTPUT
-          fi
-
       - name: Commit and push changes
         uses: actions/github-script@v6
         with:
@@ -44,15 +33,24 @@ jobs:
           script: |
             const fs = require('fs');
             const content = fs.readFileSync('./sbautorule.json', 'utf8');
-            const sha = `${{ steps.get_sha.outputs.sha }}`; // 關鍵修正：使用模板字串
-            await github.rest.repos.createOrUpdateFileContents({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              path: 'sbautorule.json',
-              message: 'Update Shadowrocket rules',
-              content: Buffer.from(content).toString('base64'),
-              sha: sha === '' ? undefined : sha
-            });
+            try {
+              await github.rest.repos.createOrUpdateFileContents({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                path: 'sbautorule.json',
+                message: 'Update Shadowrocket rules',
+                content: Buffer.from(content).toString('base64'),
+                sha: undefined, // 不傳遞 SHA，讓 GitHub 自動判斷
+                committer: { // 显式指定提交者信息
+                  name: 'GitHub Actions Bot',
+                  email: 'actions@github.com'
+                }
+              });
+            } catch (error) {
+              console.error('Error updating file:', error);
+              // Handle error as needed, e.g., throw error to fail the workflow
+              throw error;
+            }
 
       - name: Clear cache (optional)
         uses: actions/cache@v3
