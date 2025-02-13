@@ -1,22 +1,29 @@
 # sbtop500banlist
-Johnshall/Shadowrocket-ADBlock-Rules-Forever. This is a very good rule.
-So I did a remote config to automatically generate sing-box verson1 rules.
-GFW rule
-Automatically generated every day at 9:00 Taipei time
-LINK: https://raw.githubusercontent.com/kyrostown/sbtop500banlist/refs/heads/main/sbautorule.json
 
-Example sing-box client configuration:
-    "rule_set": [
-      {
-        "type": "remote",
-        "tag": "sbrule",
-        "format": "source",
-        "url": "[https://op.tomyi.link/point/rule/sbautorule.json](https://raw.githubusercontent.com/kyrostown/sbtop500banlist/refs/heads/main/sbautorule.json)"
-      },
-***
-***
-***
-    "final": "direct",
-    "find_process": true,
-    "auto_detect_interface": true
-  }
+## Rule Source
+
+*   **Johnshall/Shadowrocket-ADBlock-Rules-Forever:** This is an excellent rule list.
+*   **Automatically Generated:** I've configured it remotely to automatically generate rules for sing-box v1.
+
+## Rule Content
+
+*   **GFW Rule**
+*   **Daily Automatic Updates:** Generated daily at 9:00 AM Taipei time.
+
+## Rule Link
+
+*   [https://raw.githubusercontent.com/kyrostown/sbtop500banlist/refs/heads/main/sbautorule.json](https://raw.githubusercontent.com/kyrostown/sbtop500banlist/refs/heads/main/sbautorule.json)
+
+## sing-box Client Configuration Example
+
+```json
+"rule_set": [
+  {
+    "type": "remote",
+    "tag": "sbrule",
+    "format": "source",
+    "url": "[https://raw.githubusercontent.com/kyrostown/sbtop500banlist/refs/heads/main/sbautorule.json](https://raw.githubusercontent.com/kyrostown/sbtop500banlist/refs/heads/main/sbautorule.json)"
+  },
+  ..
+  ..
+]
