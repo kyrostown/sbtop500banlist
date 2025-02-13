@@ -26,11 +26,16 @@ jobs:
       - name: Run script
         run: python convert_rules.py
 
-      - name: Remove sbautorule.json if it exists # 新增步骤：删除文件
+      - name: Configure Git identity  # 配置 Git 身份
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions Bot"
+
+      - name: Remove sbautorule.json if it exists
         run: |
           if [[ -f sbautorule.json ]]; then
             rm sbautorule.json
-            git rm sbautorule.json # 从 Git 仓库中移除文件
+            git rm sbautorule.json
             git commit -m "Remove sbautorule.json"
             git push
           fi
