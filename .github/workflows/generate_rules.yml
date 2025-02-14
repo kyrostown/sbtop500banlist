@@ -24,7 +24,7 @@ jobs:
         run: pip install requests pyyaml
 
       - name: Run script
-        run: python convert_rules.py  # This will create sbautorule.json
+        run: python convert_rules.py  # 创建 sbautorule.json 文件
 
       - name: Configure Git identity
         run: |
@@ -32,29 +32,34 @@ jobs:
           git config --global user.name "GitHub Actions Bot"
 
       - name: Remove sbautorule.json if it exists (for scheduled runs)
-        if: github.event_name == 'schedule' # Only run on scheduled runs
+        if: github.event_name == 'schedule'
         run: |
           if [[ -f sbautorule.json ]]; then
             rm sbautorule.json
             git rm sbautorule.json
             git commit -m "Remove sbautorule.json (Scheduled)"
             git push
-          fi
-          
+
       - name: Commit and push changes
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.MY_GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            const content = fs.readFileSync('./sbautorule.json', 'utf8'); // Now file exists!
+            const path = './sbautorule.json';
+
+            if (!fs.existsSync(path)) {
+              fs.writeFileSync(path, '{}'); // 创建一个空文件，防止报错
+            }
+
+            const content = fs.readFileSync(path, 'utf8');
             await github.rest.repos.createOrUpdateFileContents({
               owner: context.repo.owner,
               repo: context.repo.repo,
               path: 'sbautorule.json',
               message: 'Update Shadowrocket rules',
               content: Buffer.from(content).toString('base64'),
-              sha: undefined, // 不传递 SHA，让 GitHub 自动判断
+              sha: undefined,
               committer: {
                 name: 'GitHub Actions Bot',
                 email: 'actions@github.com'
