@@ -22,7 +22,7 @@
     "type": "remote",
     "tag": "sbrule",
     "format": "source",
-    "url": "[https://raw.githubusercontent.com/kyrostown/sbtop500banlist/refs/heads/main/sbautorule.json](https://raw.githubusercontent.com/kyrostown/sbtop500banlist/refs/heads/main/sbautorule.json)"
+    "url": "https://raw.githubusercontent.com/kyrostown/sbtop500banlist/refs/heads/main/sbautorule.json"
   },
   ..
   ..
