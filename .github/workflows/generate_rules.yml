@@ -34,10 +34,18 @@ jobs:
       - name: Get file SHA (or empty if it doesn't exist)
         id: get_sha
         run: |
-          SHA=$(git ls-tree -z HEAD sbautorule.json | cut -d ' ' -f 3 2>/dev/null) # Suppress error if file doesn't exist
+          SHA=$(git ls-tree -z HEAD sbautorule.json | cut -d ' ' -f 3 2>/dev/null)
           echo "::set-output name=sha::$SHA"
 
-      - name: Commit and push changes
+      - name: Commit and push changes (Scheduled)
+        if: github.event_name == 'schedule'
+        run: |
+          git add sbautorule.json
+          git commit -m "Update Shadowrocket rules (Scheduled)"
+          git push origin main --force # Force push for scheduled runs
+
+      - name: Commit and push changes (Manual)
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.MY_GITHUB_TOKEN }}
@@ -50,14 +58,15 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               path: 'sbautorule.json',
-              message: 'Update Shadowrocket rules',
+              message: 'Update Shadowrocket rules (Manual)',
               content: Buffer.from(content).toString('base64'),
-              sha: sha === '' ? undefined : sha, // Use undefined if SHA is empty
+              sha: sha === '' ? undefined : sha, // Create if doesn't exist, update if it does.
               committer: {
                 name: 'GitHub Actions Bot',
                 email: 'actions@github.com'
               }
             });
+
 
       - name: Clear cache (optional)
         uses: actions/cache@v3
