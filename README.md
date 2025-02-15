@@ -8,7 +8,7 @@
 ## Rule Content
 
 *   **GFW Rule**
-*   **Daily Automatic Updates:** Generated daily at 9:00 AM Taipei time.
+*   **Daily Automatic Updates:** Generated daily at 12:00 AM Taipei time.
 
 ## Rule Link
 
