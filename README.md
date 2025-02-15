@@ -8,7 +8,7 @@
 ## Rule Content
 
 *   **GFW Rule**
-*   **Daily Automatic Updates:** Generated daily at 12:00 AM Taipei time.
+*   **Daily Automatic Updates:** Generated daily at 12:00 Taipei time.
 
 ## Rule Link
 
@@ -24,6 +24,6 @@
     "format": "source",
     "url": "https://raw.githubusercontent.com/kyrostown/sbtop500banlist/refs/heads/main/sbautorule.json"
   },
-  ..
-  ..
+  .
+  .
 ]
