@@ -31,15 +31,11 @@ jobs:
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions Bot"
 
-      - name: Remove sbautorule.json if it exists (for scheduled runs)
-        if: github.event_name == 'schedule'
+      - name: Get file SHA (or empty if it doesn't exist)
+        id: get_sha
         run: |
-          if [[ -f sbautorule.json ]]; then
-            rm sbautorule.json
-            git rm sbautorule.json
-            git commit -m "Remove sbautorule.json (Scheduled)"
-            git push origin main # 指定 origin 仓库的 main 分支
-          fi
+          SHA=$(git ls-tree -z HEAD sbautorule.json | cut -d ' ' -f 3 2>/dev/null) # Suppress error if file doesn't exist
+          echo "::set-output name=sha::$SHA"
 
       - name: Commit and push changes
         uses: actions/github-script@v6
@@ -47,20 +43,16 @@ jobs:
           github-token: ${{ secrets.MY_GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            const path = './sbautorule.json';
+            const content = fs.readFileSync('./sbautorule.json', 'utf8');
+            const sha = '${{ steps.get_sha.outputs.sha }}';
 
-            if (!fs.existsSync(path)) {
-              fs.writeFileSync(path, '{}');
-            }
-
-            const content = fs.readFileSync(path, 'utf8');
             await github.rest.repos.createOrUpdateFileContents({
               owner: context.repo.owner,
               repo: context.repo.repo,
               path: 'sbautorule.json',
               message: 'Update Shadowrocket rules',
               content: Buffer.from(content).toString('base64'),
-              sha: undefined,
+              sha: sha === '' ? undefined : sha, // Use undefined if SHA is empty
               committer: {
                 name: 'GitHub Actions Bot',
                 email: 'actions@github.com'
