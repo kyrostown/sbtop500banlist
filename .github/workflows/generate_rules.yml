@@ -24,7 +24,7 @@ jobs:
         run: pip install requests pyyaml
 
       - name: Run script
-        run: python convert_rules.py  # 创建 sbautorule.json 文件
+        run: python convert_rules.py
 
       - name: Configure Git identity
         run: |
@@ -38,7 +38,8 @@ jobs:
             rm sbautorule.json
             git rm sbautorule.json
             git commit -m "Remove sbautorule.json (Scheduled)"
-            git push
+            git push origin main # 指定 origin 仓库的 main 分支
+          fi
 
       - name: Commit and push changes
         uses: actions/github-script@v6
@@ -49,7 +50,7 @@ jobs:
             const path = './sbautorule.json';
 
             if (!fs.existsSync(path)) {
-              fs.writeFileSync(path, '{}'); // 创建一个空文件，防止报错
+              fs.writeFileSync(path, '{}');
             }
 
             const content = fs.readFileSync(path, 'utf8');
